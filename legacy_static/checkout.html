@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkout - DFA Commerce</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="/css/style.css" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar navbar-expand-lg navbar-custom">
+    <div class="container">
+      <a class="navbar-brand" href="/">
+        <div class="brand-icon"><i class="bi bi-diagram-3-fill"></i></div>
+        <span>DFA<span class="text-primary">Commerce</span></span>
+      </a>
+      
+      <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-3">
+          <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="/products">Products</a></li>
+          <li class="nav-item"><a class="nav-link" href="/track">Track Order</a></li>
+        </ul>
+
+        <ul class="navbar-nav align-items-center gap-2">
+          <div id="navAuthContainer" class="d-flex align-items-center gap-2"></div>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Title -->
+  <div class="bg-white border-bottom py-3 mb-4">
+    <div class="container">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb mb-1 small">
+          <li class="breadcrumb-item"><a href="/" class="text-decoration-none">Home</a></li>
+          <li class="breadcrumb-item"><a href="/cart" class="text-decoration-none">Cart</a></li>
+          <li class="breadcrumb-item active" aria-current="page">Checkout</li>
+        </ol>
+      </nav>
+      <h3 class="fw-bold mb-0">Secure Checkout</h3>
+    </div>
+  </div>
+
+  <div class="container mb-5">
+    <form id="checkoutForm" onsubmit="handlePlaceOrder(event)">
+      <div class="row g-4">
+        
+        <!-- Left: Shipping & Payment -->
+        <div class="col-lg-8">
+          
+          <!-- Shipping Address Card -->
+          <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
+            <h5 class="fw-bold text-dark mb-3 d-flex align-items-center gap-2">
+              <i class="bi bi-geo-alt-fill text-primary"></i> 1. Shipping Information
+            </h5>
+
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label small fw-semibold">Full Name *</label>
+                <input type="text" id="shipFullName" class="form-control" required placeholder="John Doe">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label small fw-semibold">Phone Number *</label>
+                <input type="tel" id="shipPhone" class="form-control" required placeholder="+1 (555) 000-0000">
+              </div>
+              <div class="col-12">
+                <label class="form-label small fw-semibold">Street Address *</label>
+                <input type="text" id="shipStreet" class="form-control" required placeholder="123 Main Street, Apt 4B">
+              </div>
+              <div class="col-md-5">
+                <label class="form-label small fw-semibold">City *</label>
+                <input type="text" id="shipCity" class="form-control" required placeholder="Springfield">
+              </div>
+              <div class="col-md-4">
+                <label class="form-label small fw-semibold">State / Province *</label>
+                <input type="text" id="shipState" class="form-control" required placeholder="OR">
+              </div>
+              <div class="col-md-3">
+                <label class="form-label small fw-semibold">Postal Code *</label>
+                <input type="text" id="shipPostalCode" class="form-control" required placeholder="97477">
+              </div>
+            </div>
+          </div>
+
+          <!-- Payment Simulation Card -->
+          <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
+            <h5 class="fw-bold text-dark mb-3 d-flex align-items-center gap-2">
+              <i class="bi bi-credit-card-2-front-fill text-primary"></i> 2. Payment Method
+            </h5>
+
+            <div class="alert alert-info py-2 px-3 small d-flex align-items-center gap-2 mb-3">
+              <i class="bi bi-info-circle-fill fs-5"></i>
+              <span><strong>Academic / Demo Mode:</strong> Payments are securely simulated. No actual financial cards are processed or stored in the database.</span>
+            </div>
+
+            <div class="form-check p-3 border rounded-3 mb-2 bg-light">
+              <input class="form-check-input ms-1 me-2" type="radio" name="paymentOption" id="payCard" value="Simulated Card" checked onchange="togglePaymentInputs('card')">
+              <label class="form-check-label fw-bold d-flex justify-content-between align-items-center w-100" for="payCard">
+                <span><i class="bi bi-credit-card me-2 text-primary"></i>Simulated Credit / Debit Card</span>
+                <span class="badge bg-primary">Instant S0 Confirmation</span>
+              </label>
+            </div>
+
+            <div class="form-check p-3 border rounded-3 mb-2">
+              <input class="form-check-input ms-1 me-2" type="radio" name="paymentOption" id="payCOD" value="Cash on Delivery" onchange="togglePaymentInputs('cod')">
+              <label class="form-check-label fw-bold" for="payCOD">
+                <i class="bi bi-cash-stack me-2 text-success"></i>Cash on Delivery (COD)
+              </label>
+            </div>
+
+            <div class="form-check p-3 border rounded-3 mb-3">
+              <input class="form-check-input ms-1 me-2" type="radio" name="paymentOption" id="payUPI" value="UPI / NetBanking" onchange="togglePaymentInputs('upi')">
+              <label class="form-check-label fw-bold" for="payUPI">
+                <i class="bi bi-qr-code me-2 text-info"></i>Simulated UPI / Net Banking
+              </label>
+            </div>
+
+            <!-- Card Inputs Mock -->
+            <div id="cardInputsContainer" class="p-3 bg-light rounded-3 border">
+              <div class="row g-2">
+                <div class="col-12">
+                  <label class="form-label small fw-semibold">Name on Card</label>
+                  <input type="text" class="form-control form-control-sm" value="Sarah Connor" placeholder="Cardholder Name">
+                </div>
+                <div class="col-8">
+                  <label class="form-label small fw-semibold">Card Number (Simulated)</label>
+                  <input type="text" class="form-control form-control-sm" value="•••• •••• •••• 4242" readonly>
+                </div>
+                <div class="col-2">
+                  <label class="form-label small fw-semibold">Expiry</label>
+                  <input type="text" class="form-control form-control-sm" value="12/28" readonly>
+                </div>
+                <div class="col-2">
+                  <label class="form-label small fw-semibold">CVV</label>
+                  <input type="text" class="form-control form-control-sm" value="•••" readonly>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- Right: Order Summary Review -->
+        <div class="col-lg-4">
+          <div class="card border-0 shadow-sm rounded-4 p-4 sticky-top" style="top: 85px;">
+            <h5 class="fw-bold mb-3 border-bottom pb-2">Order Items</h5>
+
+            <div id="checkoutItemsList" class="mb-3" style="max-height: 250px; overflow-y: auto;">
+              <!-- Populated dynamically -->
+            </div>
+
+            <div class="d-flex justify-content-between text-muted mb-2 small">
+              <span>Subtotal</span>
+              <span class="text-dark fw-semibold" id="chkSubtotal">$0.00</span>
+            </div>
+            <div class="d-flex justify-content-between text-muted mb-2 small">
+              <span>Shipping Fee</span>
+              <span class="text-dark fw-semibold" id="chkShipping">$0.00</span>
+            </div>
+            <div class="d-flex justify-content-between text-muted mb-3 small">
+              <span>Sales Tax (5%)</span>
+              <span class="text-dark fw-semibold" id="chkTax">$0.00</span>
+            </div>
+
+            <div class="border-top pt-3 d-flex justify-content-between align-items-center mb-4">
+              <span class="fw-bold fs-5 text-dark">Grand Total</span>
+              <span class="fw-bold fs-4 text-primary" id="chkTotal">$0.00</span>
+            </div>
+
+            <button type="submit" id="placeOrderBtn" class="btn btn-primary btn-lg w-100 py-3 shadow-sm d-flex align-items-center justify-content-center gap-2">
+              <i class="bi bi-bag-check-fill"></i>
+              <span>Place Order (Initialize S0)</span>
+            </button>
+
+            <div class="mt-3 text-center small text-muted">
+              <i class="bi bi-shield-check text-success me-1"></i> Orders enter initial DFA state <strong>S0 (Order Placed)</strong>.
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </form>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/dfaOrderValidator.js"></script>
+  <script src="/js/app.js"></script>
+  <script>
+    let checkoutCart = null;
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Check auth status
+      const authRes = await fetch('/api/auth/me');
+      const authData = await authRes.json();
+
+      if (!authData.success || !authData.user) {
+        showToast('Please log in or create an account to proceed with checkout.', 'info');
+        setTimeout(() => {
+          window.location.href = '/login?returnTo=/checkout';
+        }, 800);
+        return;
+      }
+
+      // Pre-fill user details if available
+      const u = authData.user;
+      document.getElementById('shipFullName').value = u.name || '';
+      document.getElementById('shipPhone').value = u.phone || '';
+      if (u.address) {
+        document.getElementById('shipStreet').value = u.address.street || '';
+        document.getElementById('shipCity').value = u.address.city || '';
+        document.getElementById('shipState').value = u.address.state || '';
+        document.getElementById('shipPostalCode').value = u.address.postalCode || '';
+      }
+
+      // Load cart
+      await loadCheckoutCart();
+    });
+
+    async function loadCheckoutCart() {
+      try {
+        const res = await fetch('/api/cart');
+        const data = await res.json();
+
+        if (data.success && data.cart && data.cart.items.length > 0) {
+          checkoutCart = data.cart;
+          renderCheckoutItems(data.cart.items);
+          document.getElementById('chkSubtotal').textContent = `$${data.cart.subtotal.toFixed(2)}`;
+          document.getElementById('chkShipping').textContent = data.cart.shippingFee === 0 ? 'FREE' : `$${data.cart.shippingFee.toFixed(2)}`;
+          document.getElementById('chkTax').textContent = `$${data.cart.tax.toFixed(2)}`;
+          document.getElementById('chkTotal').textContent = `$${data.cart.totalAmount.toFixed(2)}`;
+        } else {
+          showToast('Your cart is empty. Redirecting to catalog...', 'warning');
+          setTimeout(() => { window.location.href = '/products'; }, 1200);
+        }
+      } catch (err) {
+        console.error('Checkout cart error:', err);
+      }
+    }
+
+    function renderCheckoutItems(items) {
+      const container = document.getElementById('checkoutItemsList');
+      container.innerHTML = items.map(item => `
+        <div class="d-flex align-items-center gap-2 mb-2 pb-2 border-bottom">
+          <img src="${escapeHtml(item.imageUrl || '')}" alt="${escapeHtml(item.name)}" class="rounded" style="width: 45px; height: 45px; object-fit: cover;">
+          <div class="flex-grow-1 text-truncate">
+            <h6 class="mb-0 small fw-bold text-truncate" title="${escapeHtml(item.name)}">${escapeHtml(item.name)}</h6>
+            <small class="text-muted">${item.quantity} &times; $${item.price.toFixed(2)}</small>
+          </div>
+          <div class="small fw-bold text-dark">$${(item.price * item.quantity).toFixed(2)}</div>
+        </div>
+      `).join('');
+    }
+
+    function togglePaymentInputs(type) {
+      const cardBox = document.getElementById('cardInputsContainer');
+      if (cardBox) {
+        cardBox.style.display = type === 'card' ? 'block' : 'none';
+      }
+    }
+
+    async function handlePlaceOrder(e) {
+      e.preventDefault();
+
+      const btn = document.getElementById('placeOrderBtn');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Validating DFA State S0...';
+
+      const shippingAddress = {
+        fullName: document.getElementById('shipFullName').value.trim(),
+        phone: document.getElementById('shipPhone').value.trim(),
+        street: document.getElementById('shipStreet').value.trim(),
+        city: document.getElementById('shipCity').value.trim(),
+        state: document.getElementById('shipState').value.trim(),
+        postalCode: document.getElementById('shipPostalCode').value.trim()
+      };
+
+      const selectedPayment = document.querySelector('input[name="paymentOption"]:checked')?.value || 'Simulated Card';
+
+      try {
+        const res = await fetch('/api/orders/place', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ shippingAddress, paymentMethod: selectedPayment })
+        });
+        const data = await res.json();
+
+        if (data.success && data.order) {
+          showToast('Order successfully initialized in DFA State S0 (Order Placed)!', 'success');
+          await updateCartBadge();
+          setTimeout(() => {
+            window.location.href = `/track/${data.order.orderNumber}`;
+          }, 800);
+        } else {
+          showToast(data.error || 'Failed to place order.', 'error');
+          btn.disabled = false;
+          btn.innerHTML = '<i class="bi bi-bag-check-fill me-2"></i>Place Order (Initialize S0)';
+        }
+      } catch (err) {
+        console.error('Order placement error:', err);
+        showToast('Network error placing order.', 'error');
+        btn.disabled = false;
+        btn.innerHTML = '<i class="bi bi-bag-check-fill me-2"></i>Place Order (Initialize S0)';
+      }
+    }
+  </script>
+</body>
+</html>

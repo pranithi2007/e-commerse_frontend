@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DFA Commerce - Deterministic Finite Automaton Shopping</title>
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css" rel="stylesheet">
+  <!-- Custom CSS -->
+  <link href="/css/style.css" rel="stylesheet">
+  <link href="/css/dfa-visualizer.css" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar navbar-expand-lg navbar-custom">
+    <div class="container">
+      <a class="navbar-brand" href="/">
+        <div class="brand-icon">
+          <i class="bi bi-diagram-3-fill"></i>
+        </div>
+        <span>DFA<span class="text-primary">Commerce</span></span>
+      </a>
+      
+      <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-3">
+          <li class="nav-item">
+            <a class="nav-link active" href="/"><i class="bi bi-house-door me-1"></i>Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/products"><i class="bi bi-grid me-1"></i>Products</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/track"><i class="bi bi-geo-alt me-1"></i>Track Order</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/dfa-spec"><i class="bi bi-cpu me-1"></i>DFA Theory & Spec</a>
+          </li>
+        </ul>
+
+        <!-- Search Bar -->
+        <form class="d-flex me-3" action="/products" method="GET">
+          <div class="input-group">
+            <input type="text" class="form-control form-control-sm border-end-0" name="q" placeholder="Search products..." style="border-radius: 8px 0 0 8px;">
+            <button class="btn btn-outline-secondary btn-sm bg-white border-start-0 text-muted" type="submit" style="border-radius: 0 8px 8px 0;">
+              <i class="bi bi-search"></i>
+            </button>
+          </div>
+        </form>
+
+        <!-- Right Side Nav: Cart & User Auth -->
+        <ul class="navbar-nav align-items-center gap-2">
+          <li class="nav-item position-relative me-2">
+            <a class="nav-link p-2" href="/cart" title="Shopping Cart">
+              <i class="bi bi-cart3 fs-5 text-dark"></i>
+              <span id="navCartBadge" class="badge-cart-count" style="display: none;">0</span>
+            </a>
+          </li>
+          <div id="navAuthContainer" class="d-flex align-items-center gap-2">
+            <!-- Populated dynamically by app.js -->
+          </div>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="container position-relative">
+      <div class="row align-items-center">
+        <div class="col-lg-7">
+          <div class="dfa-badge-pill">
+            <i class="bi bi-shield-check"></i> Formally Verified Order Lifecycle with DFA
+          </div>
+          <h1 class="display-4 fw-bold mb-3">
+            Intelligent Shopping Powered by <span class="text-info">Automata Theory</span>
+          </h1>
+          <p class="lead mb-4 text-light opacity-90">
+            Welcome to the first e-commerce platform where every order transition is strictly governed by a 
+            <strong>Deterministic Finite Automaton (DFA)</strong>. Experience predictable, transparent order fulfillment from S0 (Order Placed) to S5 (Delivered).
+          </p>
+          <div class="d-flex flex-wrap gap-3">
+            <a href="/products" class="btn btn-light btn-lg text-primary fw-bold px-4 shadow-sm">
+              <i class="bi bi-bag-fill me-2"></i>Start Shopping
+            </a>
+            <a href="/track" class="btn btn-outline-light btn-lg px-4">
+              <i class="bi bi-geo-alt me-2"></i>Track An Order
+            </a>
+          </div>
+        </div>
+        <div class="col-lg-5 d-none d-lg-block">
+          <div class="card p-3 shadow-lg border-0 bg-white text-dark rounded-4">
+            <div class="d-flex align-items-center justify-content-between mb-3 border-bottom pb-2">
+              <span class="badge bg-primary px-3 py-2">DFA Pipeline</span>
+              <span class="small text-muted font-monospace">M = (Q, Σ, δ, q0, F)</span>
+            </div>
+            <div class="small fw-semibold text-secondary mb-2">Formal State Transitions:</div>
+            <div class="p-2 rounded bg-light border small font-monospace">
+              <div>S0: Order Placed &rarr; S1: Confirmed</div>
+              <div>S1: Confirmed &rarr; S2: Processing</div>
+              <div>S2: Processing &rarr; S3: Shipped</div>
+              <div>S3: Shipped &rarr; S4: Out for Delivery</div>
+              <div>S4: Out for Delivery &rarr; S5: Delivered (Terminal)</div>
+              <div class="text-danger mt-1">S0, S1 &rarr; S6: Cancelled (Terminal)</div>
+            </div>
+            <div class="mt-3 text-center">
+              <a href="/dfa-spec" class="btn btn-sm btn-outline-primary w-100">
+                Explore Full State Machine Diagram &rarr;
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Categories Section -->
+  <section class="py-5 bg-white border-bottom">
+    <div class="container">
+      <div class="d-flex justify-content-between align-items-end mb-4">
+        <div>
+          <h2 class="fw-bold text-dark mb-1">Shop by Category</h2>
+          <p class="text-muted mb-0">Browse curated items across premium departments</p>
+        </div>
+        <a href="/products" class="text-primary fw-semibold text-decoration-none">
+          All Products <i class="bi bi-arrow-right"></i>
+        </a>
+      </div>
+
+      <div class="row g-3">
+        <div class="col-6 col-md-4 col-lg-2">
+          <a href="/products?category=Electronics" class="text-decoration-none">
+            <div class="card text-center p-3 h-100 border rounded-3 hover-shadow transition">
+              <i class="bi bi-laptop fs-1 text-primary mb-2"></i>
+              <span class="fw-semibold text-dark small">Electronics</span>
+            </div>
+          </a>
+        </div>
+        <div class="col-6 col-md-4 col-lg-2">
+          <a href="/products?category=Fashion" class="text-decoration-none">
+            <div class="card text-center p-3 h-100 border rounded-3 hover-shadow transition">
+              <i class="bi bi-tag fs-1 text-primary mb-2"></i>
+              <span class="fw-semibold text-dark small">Fashion</span>
+            </div>
+          </a>
+        </div>
+        <div class="col-6 col-md-4 col-lg-2">
+          <a href="/products?category=Home+%26+Kitchen" class="text-decoration-none">
+            <div class="card text-center p-3 h-100 border rounded-3 hover-shadow transition">
+              <i class="bi bi-cup-hot fs-1 text-primary mb-2"></i>
+              <span class="fw-semibold text-dark small">Home & Kitchen</span>
+            </div>
+          </a>
+        </div>
+        <div class="col-6 col-md-4 col-lg-2">
+          <a href="/products?category=Sports+%26+Fitness" class="text-decoration-none">
+            <div class="card text-center p-3 h-100 border rounded-3 hover-shadow transition">
+              <i class="bi bi-activity fs-1 text-primary mb-2"></i>
+              <span class="fw-semibold text-dark small">Sports & Fitness</span>
+            </div>
+          </a>
+        </div>
+        <div class="col-6 col-md-4 col-lg-2">
+          <a href="/products?category=Books+%26+Media" class="text-decoration-none">
+            <div class="card text-center p-3 h-100 border rounded-3 hover-shadow transition">
+              <i class="bi bi-book fs-1 text-primary mb-2"></i>
+              <span class="fw-semibold text-dark small">Books & Media</span>
+            </div>
+          </a>
+        </div>
+        <div class="col-6 col-md-4 col-lg-2">
+          <a href="/products" class="text-decoration-none">
+            <div class="card text-center p-3 h-100 border rounded-3 bg-light hover-shadow transition">
+              <i class="bi bi-grid-fill fs-1 text-secondary mb-2"></i>
+              <span class="fw-semibold text-dark small">View All</span>
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured Products Section -->
+  <section class="py-5">
+    <div class="container">
+      <div class="d-flex justify-content-between align-items-end mb-4">
+        <div>
+          <span class="badge bg-primary-subtle text-primary fw-bold mb-2">HANDPICKED DEALS</span>
+          <h2 class="fw-bold text-dark mb-1">Featured Products</h2>
+          <p class="text-muted mb-0">Discover our highest rated customer favorites</p>
+        </div>
+        <a href="/products" class="btn btn-outline-primary btn-sm px-3">
+          Explore Catalog <i class="bi bi-arrow-right ms-1"></i>
+        </a>
+      </div>
+
+      <!-- Featured Products Grid -->
+      <div id="featuredProductsContainer" class="row g-4">
+        <div class="col-12 text-center py-5">
+          <div class="spinner-border text-primary" role="status"></div>
+          <p class="text-muted mt-2">Loading featured collection...</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How DFA Order Processing Works -->
+  <section class="py-5 bg-white border-top border-bottom">
+    <div class="container">
+      <div class="text-center max-w-700 mx-auto mb-5">
+        <span class="badge bg-primary px-3 py-2 mb-2">DFA ARCHITECTURE</span>
+        <h2 class="fw-bold">How Deterministic Finite Automaton Protects Your Order</h2>
+        <p class="text-muted">Unlike typical platforms with arbitrary status updates, every status update is strictly validated against a formal state transition function &delta;.</p>
+      </div>
+
+      <div class="row g-4">
+        <div class="col-md-4">
+          <div class="card h-100 p-4 border rounded-4 shadow-sm">
+            <div class="rounded-circle bg-primary-subtle text-primary p-3 d-inline-flex mb-3" style="width: 50px; height: 50px; align-items: center; justify-content: center;">
+              <i class="bi bi-shield-lock-fill fs-4"></i>
+            </div>
+            <h5 class="fw-bold mb-2">1. Mathematical Validation</h5>
+            <p class="text-muted small mb-0">Transitions such as jumping from "Placed" directly to "Delivered" or modifying terminal states are strictly rejected at the engine level.</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card h-100 p-4 border rounded-4 shadow-sm">
+            <div class="rounded-circle bg-info-subtle text-info p-3 d-inline-flex mb-3" style="width: 50px; height: 50px; align-items: center; justify-content: center;">
+              <i class="bi bi-clock-history fs-4"></i>
+            </div>
+            <h5 class="fw-bold mb-2">2. Immutable Audit Trail</h5>
+            <p class="text-muted small mb-0">Every state change records the previous state, new state, trigger event, operator, and microsecond timestamp directly in the database.</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card h-100 p-4 border rounded-4 shadow-sm">
+            <div class="rounded-circle bg-success-subtle text-success p-3 d-inline-flex mb-3" style="width: 50px; height: 50px; align-items: center; justify-content: center;">
+              <i class="bi bi-check-circle-fill fs-4"></i>
+            </div>
+            <h5 class="fw-bold mb-2">3. Absorbing Terminal States</h5>
+            <p class="text-muted small mb-0">Once an order reaches <strong>S5 (Delivered)</strong> or <strong>S6 (Cancelled)</strong>, it becomes immutable and cannot be tampered with.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer-custom">
+    <div class="container">
+      <div class="row gy-4">
+        <div class="col-lg-4 col-md-6">
+          <div class="d-flex align-items-center gap-2 mb-3">
+            <div class="brand-icon" style="width: 32px; height: 32px; font-size: 1rem;">
+              <i class="bi bi-diagram-3-fill"></i>
+            </div>
+            <span class="fw-bold fs-5 text-dark">DFA<span class="text-primary">Commerce</span></span>
+          </div>
+          <p class="text-muted small mb-3">
+            A state-of-the-art E-Commerce Shopping and Order Management System powered by a Deterministic Finite Automaton (DFA) state validation engine.
+          </p>
+          <div class="text-muted small">
+            Built with Node.js, Express, MongoDB, and Bootstrap 5.
+          </div>
+        </div>
+        <div class="col-lg-2 col-md-6">
+          <h6 class="fw-bold text-dark mb-3">Quick Links</h6>
+          <ul class="list-unstyled small">
+            <li class="mb-2"><a href="/products" class="footer-link">Products Catalog</a></li>
+            <li class="mb-2"><a href="/cart" class="footer-link">Shopping Cart</a></li>
+            <li class="mb-2"><a href="/orders" class="footer-link">My Orders</a></li>
+            <li class="mb-2"><a href="/track" class="footer-link">Track Order</a></li>
+          </ul>
+        </div>
+        <div class="col-lg-3 col-md-6">
+          <h6 class="fw-bold text-dark mb-3">DFA Architecture</h6>
+          <ul class="list-unstyled small">
+            <li class="mb-2"><a href="/dfa-spec" class="footer-link">State Machine Specification</a></li>
+            <li class="mb-2"><span class="text-muted">States: S0 to S6</span></li>
+            <li class="mb-2"><span class="text-muted">Terminal: S5 (Delivered), S6 (Cancelled)</span></li>
+            <li class="mb-2"><a href="/admin/orders" class="footer-link">Admin Transition Console</a></li>
+          </ul>
+        </div>
+        <div class="col-lg-3 col-md-6">
+          <h6 class="fw-bold text-dark mb-3">Quick Demo Logins</h6>
+          <div class="card p-2 bg-light border small text-muted">
+            <div class="mb-1"><strong>Admin:</strong> admin@dfamall.com (admin123)</div>
+            <div><strong>Customer:</strong> customer@dfamall.com (customer123)</div>
+          </div>
+        </div>
+      </div>
+      <hr class="my-4 text-muted opacity-25">
+      <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center small text-muted">
+        <div>&copy; 2026 DFA Commerce. All rights reserved.</div>
+        <div class="mt-2 mt-sm-0">
+          <span class="badge bg-success-subtle text-success">DFA Engine: Active & Verified</span>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Product Quick View Modal -->
+  <div class="modal fade" id="quickViewModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-0 shadow">
+        <div class="modal-header border-0 pb-0">
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body pt-0" id="quickViewModalBody">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/dfaOrderValidator.js"></script>
+  <script src="/js/app.js"></script>
+  <script>
+    // Fetch and render featured products on Home Page
+    document.addEventListener('DOMContentLoaded', async () => {
+      try {
+        const res = await fetch('/api/products?featured=true');
+        const data = await res.json();
+        const container = document.getElementById('featuredProductsContainer');
+
+        if (data.success && data.products.length > 0) {
+          container.innerHTML = data.products.slice(0, 4).map(p => `
+            <div class="col-md-6 col-lg-3">
+              <div class="card card-custom h-100">
+                <div class="product-img-wrapper">
+                  <img src="${escapeHtml(p.imageUrl)}" alt="${escapeHtml(p.name)}" class="product-img">
+                  <span class="badge bg-primary position-absolute top-0 start-0 m-2">${escapeHtml(p.category)}</span>
+                </div>
+                <div class="card-body d-flex flex-column p-3">
+                  <div class="star-rating mb-1">
+                    <i class="bi bi-star-fill text-warning"></i>
+                    <i class="bi bi-star-fill text-warning"></i>
+                    <i class="bi bi-star-fill text-warning"></i>
+                    <i class="bi bi-star-fill text-warning"></i>
+                    <i class="bi bi-star-half text-warning"></i>
+                    <span class="text-muted small ms-1">(${p.rating || 4.5})</span>
+                  </div>
+                  <h6 class="card-title fw-bold text-dark text-truncate mb-2" title="${escapeHtml(p.name)}">
+                    ${escapeHtml(p.name)}
+                  </h6>
+                  <p class="card-text text-muted small text-truncate-2 mb-3" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; height: 38px;">
+                    ${escapeHtml(p.description)}
+                  </p>
+                  <div class="mt-auto d-flex align-items-center justify-content-between pt-2 border-top">
+                    <div class="product-price">$${p.price.toFixed(2)}</div>
+                    <button class="btn btn-primary btn-sm px-3" onclick="quickAddToCart('${p._id || p.id}', '${escapeHtml(p.name)}')">
+                      <i class="bi bi-cart-plus me-1"></i> Add
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          `).join('');
+        }
+      } catch (err) {
+        console.error('Error fetching featured products:', err);
+      }
+    });
+
+    async function quickAddToCart(productId, name) {
+      try {
+        const res = await fetch('/api/cart/add', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ productId, quantity: 1 })
+        });
+        const data = await res.json();
+        if (data.success) {
+          showToast(`Added "${name}" to shopping cart!`, 'success');
+          await updateCartBadge();
+        } else {
+          showToast(data.error || 'Failed to add item to cart.', 'warning');
+        }
+      } catch (err) {
+        showToast('Network error adding to cart.', 'error');
+      }
+    }
+  </script>
+</body>
+</html>

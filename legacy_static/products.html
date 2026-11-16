@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Products Catalog - DFA Commerce</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="/css/style.css" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar navbar-expand-lg navbar-custom">
+    <div class="container">
+      <a class="navbar-brand" href="/">
+        <div class="brand-icon"><i class="bi bi-diagram-3-fill"></i></div>
+        <span>DFA<span class="text-primary">Commerce</span></span>
+      </a>
+      
+      <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-3">
+          <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+          <li class="nav-item"><a class="nav-link active" href="/products">Products</a></li>
+          <li class="nav-item"><a class="nav-link" href="/track">Track Order</a></li>
+          <li class="nav-item"><a class="nav-link" href="/dfa-spec">DFA Theory & Spec</a></li>
+        </ul>
+
+        <!-- Right Side Nav: Cart & User Auth -->
+        <ul class="navbar-nav align-items-center gap-2">
+          <li class="nav-item position-relative me-2">
+            <a class="nav-link p-2" href="/cart" title="Shopping Cart">
+              <i class="bi bi-cart3 fs-5 text-dark"></i>
+              <span id="navCartBadge" class="badge-cart-count" style="display: none;">0</span>
+            </a>
+          </li>
+          <div id="navAuthContainer" class="d-flex align-items-center gap-2"></div>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Page Header -->
+  <div class="bg-white border-bottom py-4 mb-4">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-md-6">
+          <h2 class="fw-bold mb-1">Product Catalog</h2>
+          <p class="text-muted mb-0">Browse our verified inventory with secure DFA state-tracked fulfillment.</p>
+        </div>
+        <div class="col-md-6 text-md-end mt-3 mt-md-0">
+          <span class="text-muted small me-2" id="productsCountBadge">Showing products...</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content: Filters + Product Grid -->
+  <div class="container mb-5">
+    <div class="row g-4">
+      
+      <!-- Filters Sidebar -->
+      <div class="col-lg-3">
+        <div class="filter-sidebar">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="fw-bold mb-0">Filters</h5>
+            <button class="btn btn-link btn-sm text-decoration-none p-0" onclick="resetFilters()">Reset</button>
+          </div>
+
+          <!-- Search Input -->
+          <div class="mb-4">
+            <label class="form-label small fw-bold text-secondary">Search Keyword</label>
+            <div class="input-group">
+              <input type="text" id="filterSearchInput" class="form-control form-control-sm" placeholder="e.g. Headphones, Watch...">
+              <button class="btn btn-outline-primary btn-sm" onclick="applyFilters()"><i class="bi bi-search"></i></button>
+            </div>
+          </div>
+
+          <!-- Category Filter -->
+          <div class="mb-4">
+            <label class="form-label small fw-bold text-secondary">Department</label>
+            <div id="categoryPillList">
+              <a href="javascript:void(0)" class="category-pill active" data-category="All" onclick="selectCategory('All')">
+                <i class="bi bi-grid-fill me-2"></i>All Categories
+              </a>
+              <a href="javascript:void(0)" class="category-pill" data-category="Electronics" onclick="selectCategory('Electronics')">
+                <i class="bi bi-laptop me-2"></i>Electronics
+              </a>
+              <a href="javascript:void(0)" class="category-pill" data-category="Fashion" onclick="selectCategory('Fashion')">
+                <i class="bi bi-tag me-2"></i>Fashion
+              </a>
+              <a href="javascript:void(0)" class="category-pill" data-category="Home & Kitchen" onclick="selectCategory('Home & Kitchen')">
+                <i class="bi bi-cup-hot me-2"></i>Home & Kitchen
+              </a>
+              <a href="javascript:void(0)" class="category-pill" data-category="Sports & Fitness" onclick="selectCategory('Sports & Fitness')">
+                <i class="bi bi-activity me-2"></i>Sports & Fitness
+              </a>
+              <a href="javascript:void(0)" class="category-pill" data-category="Books & Media" onclick="selectCategory('Books & Media')">
+                <i class="bi bi-book me-2"></i>Books & Media
+              </a>
+            </div>
+          </div>
+
+          <!-- Price Range Filter -->
+          <div class="mb-4">
+            <label class="form-label small fw-bold text-secondary d-flex justify-content-between">
+              <span>Max Price</span>
+              <span class="text-primary fw-bold" id="priceLabel">$300</span>
+            </label>
+            <input type="range" class="form-range" id="priceRangeInput" min="10" max="300" step="10" value="300" oninput="updatePriceLabel(this.value)" onchange="applyFilters()">
+            <div class="d-flex justify-content-between small text-muted">
+              <span>$10</span>
+              <span>$300+</span>
+            </div>
+          </div>
+
+          <!-- Sort Selector -->
+          <div class="mb-3">
+            <label class="form-label small fw-bold text-secondary">Sort Order</label>
+            <select id="sortSelect" class="form-select form-select-sm" onchange="applyFilters()">
+              <option value="featured">Featured First</option>
+              <option value="price-asc">Price: Low to High</option>
+              <option value="price-desc">Price: High to Low</option>
+              <option value="rating">Highest Rated</option>
+              <option value="name-asc">Name: A to Z</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Products Grid -->
+      <div class="col-lg-9">
+        <div id="catalogGrid" class="row g-3">
+          <div class="col-12 text-center py-5">
+            <div class="spinner-border text-primary" role="status"></div>
+            <p class="text-muted mt-2">Loading products catalog...</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Product Details Modal -->
+  <div class="modal fade" id="productDetailsModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content border-0 shadow-lg rounded-4">
+        <div class="modal-header border-0 pb-0">
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body p-4 pt-0" id="productDetailsModalContent">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/dfaOrderValidator.js"></script>
+  <script src="/js/app.js"></script>
+  <script>
+    let currentCategory = 'All';
+    let currentMaxPrice = 300;
+    let loadedProducts = [];
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Check query params in URL e.g. ?category=Electronics or ?q=keyboard
+      const params = new URLSearchParams(window.location.search);
+      const catParam = params.get('category');
+      const qParam = params.get('q');
+
+      if (catParam) {
+        currentCategory = catParam;
+        highlightCategoryPill(catParam);
+      }
+      if (qParam) {
+        const searchInput = document.getElementById('filterSearchInput');
+        if (searchInput) searchInput.value = qParam;
+      }
+
+      await loadProducts();
+    });
+
+    function highlightCategoryPill(category) {
+      document.querySelectorAll('#categoryPillList .category-pill').forEach(pill => {
+        pill.classList.toggle('active', pill.getAttribute('data-category') === category);
+      });
+    }
+
+    function selectCategory(category) {
+      currentCategory = category;
+      highlightCategoryPill(category);
+      applyFilters();
+    }
+
+    function updatePriceLabel(val) {
+      document.getElementById('priceLabel').textContent = `$${val}`;
+      currentMaxPrice = parseFloat(val);
+    }
+
+    function resetFilters() {
+      currentCategory = 'All';
+      currentMaxPrice = 300;
+      document.getElementById('priceRangeInput').value = 300;
+      document.getElementById('priceLabel').textContent = '$300';
+      document.getElementById('filterSearchInput').value = '';
+      document.getElementById('sortSelect').value = 'featured';
+      highlightCategoryPill('All');
+      applyFilters();
+    }
+
+    async function applyFilters() {
+      const q = document.getElementById('filterSearchInput').value.trim();
+      const sort = document.getElementById('sortSelect').value;
+
+      const params = new URLSearchParams();
+      if (q) params.set('q', q);
+      if (currentCategory && currentCategory !== 'All') params.set('category', currentCategory);
+      if (currentMaxPrice < 300) params.set('maxPrice', currentMaxPrice);
+      if (sort) params.set('sort', sort);
+
+      await loadProducts(params.toString());
+    }
+
+    async function loadProducts(queryString = '') {
+      const grid = document.getElementById('catalogGrid');
+      const countBadge = document.getElementById('productsCountBadge');
+
+      try {
+        const res = await fetch(`/api/products?${queryString}`);
+        const data = await res.json();
+
+        if (data.success && Array.isArray(data.products)) {
+          loadedProducts = data.products;
+          if (countBadge) countBadge.textContent = `Found ${data.products.length} product(s)`;
+
+          if (data.products.length === 0) {
+            grid.innerHTML = `
+              <div class="col-12 text-center py-5">
+                <i class="bi bi-search fs-1 text-muted"></i>
+                <h5 class="fw-bold text-dark mt-3">No products match your criteria</h5>
+                <p class="text-muted small">Try adjusting your filters or search keywords.</p>
+                <button class="btn btn-outline-primary btn-sm" onclick="resetFilters()">Reset All Filters</button>
+              </div>
+            `;
+            return;
+          }
+
+          grid.innerHTML = data.products.map(p => `
+            <div class="col-md-6 col-lg-4">
+              <div class="card card-custom h-100">
+                <div class="product-img-wrapper" onclick="openProductModal('${p._id || p.id}')" style="cursor: pointer;">
+                  <img src="${escapeHtml(p.imageUrl)}" alt="${escapeHtml(p.name)}" class="product-img">
+                  <span class="badge bg-primary position-absolute top-0 start-0 m-2">${escapeHtml(p.category)}</span>
+                </div>
+                <div class="card-body d-flex flex-column p-3">
+                  <div class="d-flex justify-content-between align-items-center mb-1">
+                    <div class="star-rating">
+                      <i class="bi bi-star-fill text-warning"></i>
+                      <span class="text-muted small ms-1">${p.rating || 4.5}</span>
+                    </div>
+                    <span class="small text-muted">${p.stock > 0 ? `<span class="text-success"><i class="bi bi-check-circle me-1"></i>In Stock (${p.stock})</span>` : '<span class="text-danger">Out of stock</span>'}</span>
+                  </div>
+                  <h6 class="card-title fw-bold text-dark text-truncate mb-1" title="${escapeHtml(p.name)}" onclick="openProductModal('${p._id || p.id}')" style="cursor: pointer;">
+                    ${escapeHtml(p.name)}
+                  </h6>
+                  <p class="card-text text-muted small text-truncate-2 mb-3" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; height: 38px;">
+                    ${escapeHtml(p.description)}
+                  </p>
+                  <div class="mt-auto d-flex align-items-center justify-content-between pt-2 border-top">
+                    <div class="product-price">$${p.price.toFixed(2)}</div>
+                    <button class="btn btn-primary btn-sm px-3" onclick="addToCart('${p._id || p.id}', '${escapeHtml(p.name)}')">
+                      <i class="bi bi-cart-plus me-1"></i> Add
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          `).join('');
+        }
+      } catch (err) {
+        console.error('Error loading products:', err);
+        grid.innerHTML = '<div class="col-12 text-center text-danger py-4">Failed to load products.</div>';
+      }
+    }
+
+    function openProductModal(productId) {
+      const p = loadedProducts.find(item => (item._id || item.id) === productId);
+      if (!p) return;
+
+      const modalContent = document.getElementById('productDetailsModalContent');
+      modalContent.innerHTML = `
+        <div class="row g-4">
+          <div class="col-md-6">
+            <img src="${escapeHtml(p.imageUrl)}" alt="${escapeHtml(p.name)}" class="img-fluid rounded-3 shadow-sm w-100" style="max-height: 350px; object-fit: cover;">
+          </div>
+          <div class="col-md-6 d-flex flex-column">
+            <span class="badge bg-primary-subtle text-primary align-self-start mb-2">${escapeHtml(p.category)}</span>
+            <h4 class="fw-bold mb-2">${escapeHtml(p.name)}</h4>
+            <div class="star-rating mb-3">
+              <i class="bi bi-star-fill text-warning"></i>
+              <i class="bi bi-star-fill text-warning"></i>
+              <i class="bi bi-star-fill text-warning"></i>
+              <i class="bi bi-star-fill text-warning"></i>
+              <i class="bi bi-star-half text-warning"></i>
+              <span class="text-muted small ms-2">${p.rating || 4.5} rating</span>
+            </div>
+            <div class="fs-3 fw-bold text-primary mb-3">$${p.price.toFixed(2)}</div>
+            <p class="text-muted mb-4">${escapeHtml(p.description)}</p>
+            <div class="mb-4">
+              <span class="badge ${p.stock > 0 ? 'bg-success' : 'bg-danger'} px-3 py-2">
+                ${p.stock > 0 ? `In Stock: ${p.stock} units available` : 'Out of Stock'}
+              </span>
+            </div>
+            <div class="mt-auto d-flex gap-2">
+              <button class="btn btn-primary btn-lg flex-grow-1" onclick="addToCart('${p._id || p.id}', '${escapeHtml(p.name)}'); bootstrap.Modal.getInstance(document.getElementById('productDetailsModal')).hide();">
+                <i class="bi bi-cart-plus me-2"></i>Add to Cart
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+
+      const modal = new bootstrap.Modal(document.getElementById('productDetailsModal'));
+      modal.show();
+    }
+
+    async function addToCart(productId, name) {
+      try {
+        const res = await fetch('/api/cart/add', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ productId, quantity: 1 })
+        });
+        const data = await res.json();
+        if (data.success) {
+          showToast(`Added "${name}" to shopping cart!`, 'success');
+          await updateCartBadge();
+        } else {
+          showToast(data.error || 'Failed to add item to cart.', 'warning');
+        }
+      } catch (err) {
+        showToast('Network error adding to cart.', 'error');
+      }
+    }
+  </script>
+</body>
+</html>

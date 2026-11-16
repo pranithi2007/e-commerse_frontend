@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DFA Specification & Live Simulator - DFA Commerce</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="/css/style.css" rel="stylesheet">
+  <link href="/css/dfa-visualizer.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+  <!-- Navigation Bar -->
+  <nav class="navbar navbar-expand-lg navbar-custom">
+    <div class="container">
+      <a class="navbar-brand" href="/">
+        <div class="brand-icon"><i class="bi bi-diagram-3-fill"></i></div>
+        <span>DFA<span class="text-primary">Commerce</span></span>
+      </a>
+      
+      <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-3">
+          <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="/products">Products</a></li>
+          <li class="nav-item"><a class="nav-link" href="/track">Track Order</a></li>
+          <li class="nav-item"><a class="nav-link active" href="/dfa-spec">DFA Theory & Spec</a></li>
+        </ul>
+
+        <ul class="navbar-nav align-items-center gap-2">
+          <li class="nav-item position-relative me-2">
+            <a class="nav-link p-2" href="/cart" title="Shopping Cart">
+              <i class="bi bi-cart3 fs-5 text-dark"></i>
+              <span id="navCartBadge" class="badge-cart-count" style="display: none;">0</span>
+            </a>
+          </li>
+          <div id="navAuthContainer" class="d-flex align-items-center gap-2"></div>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Header -->
+  <div class="bg-white border-bottom py-4 mb-4">
+    <div class="container">
+      <span class="badge bg-primary-subtle text-primary fw-bold mb-1">FORMAL COMPUTATION THEORY</span>
+      <h2 class="fw-bold mb-1">Deterministic Finite Automaton (DFA) Specification</h2>
+      <p class="text-muted mb-0">Mathematical formulation, state transition matrix & interactive online automaton simulator.</p>
+    </div>
+  </div>
+
+  <div class="container mb-5">
+    
+    <!-- 5-Tuple Definition Card -->
+    <div class="card border-0 shadow-sm rounded-4 p-4 bg-white mb-4">
+      <h4 class="fw-bold text-dark mb-3 d-flex align-items-center gap-2">
+        <i class="bi bi-award text-primary"></i> Formal 5-Tuple Definition: M = (Q, &Sigma;, &delta;, q0, F)
+      </h4>
+      <div class="row g-3">
+        <div class="col-md-6">
+          <div class="p-3 bg-light rounded-3 border h-100">
+            <h6 class="fw-bold text-primary mb-2">1. Set of States (Q)</h6>
+            <code class="d-block mb-2 font-monospace">Q = { S0, S1, S2, S3, S4, S5, S6 }</code>
+            <ul class="small text-muted mb-0 ps-3">
+              <li><strong>S0:</strong> Order Placed (Initial state)</li>
+              <li><strong>S1:</strong> Order Confirmed</li>
+              <li><strong>S2:</strong> Processing</li>
+              <li><strong>S3:</strong> Shipped</li>
+              <li><strong>S4:</strong> Out for Delivery</li>
+              <li><strong>S5:</strong> Delivered (Accepting / Terminal)</li>
+              <li><strong>S6:</strong> Cancelled (Accepting / Terminal)</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="p-3 bg-light rounded-3 border h-100">
+            <h6 class="fw-bold text-primary mb-2">2. Input Alphabet (&Sigma;)</h6>
+            <code class="d-block mb-2 font-monospace">&Sigma; = { CONFIRM, CANCEL, START_PROCESSING, SHIP, OUT_FOR_DELIVERY, DELIVER }</code>
+            <p class="small text-muted mb-2">Events triggered by customer actions or administrative logistics dispatch operations.</p>
+            <h6 class="fw-bold text-primary mb-1 mt-3">3. Initial State (q0) &amp; Final States (F)</h6>
+            <div class="small font-monospace mb-1">&bull; q0 = S0 (Order Placed)</div>
+            <div class="small font-monospace">&bull; F = { S5, S6 } (Delivered &amp; Cancelled are terminal absorbing states)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Formal Transition Table (δ) -->
+    <div class="card border-0 shadow-sm rounded-4 p-4 bg-white mb-4">
+      <h4 class="fw-bold text-dark mb-3 d-flex align-items-center gap-2">
+        <i class="bi bi-table text-primary"></i> State Transition Function: &delta; : Q &times; &Sigma; &rarr; Q
+      </h4>
+      <div class="table-responsive">
+        <table class="table table-bordered align-middle text-center mb-0">
+          <thead class="table-primary small">
+            <tr>
+              <th>Current State (q)</th>
+              <th>Input Event (&sigma;)</th>
+              <th>Next State &delta;(q, &sigma;)</th>
+              <th>Transition Semantic Meaning</th>
+              <th>Classification</th>
+            </tr>
+          </thead>
+          <tbody class="small font-monospace">
+            <tr>
+              <td><span class="badge bg-primary">S0</span> Order Placed</td>
+              <td>CONFIRM_ORDER</td>
+              <td><span class="badge bg-info text-dark">S1</span></td>
+              <td class="text-start font-sans-serif">Order approved & payment verified</td>
+              <td><span class="badge bg-success">Legal &delta;</span></td>
+            </tr>
+            <tr>
+              <td><span class="badge bg-primary">S0</span> Order Placed</td>
+              <td>CANCEL_ORDER</td>
+              <td><span class="badge bg-danger">S6</span></td>
+              <td class="text-start font-sans-serif">Customer / Admin cancels before confirmation</td>
+              <td><span class="badge bg-success">Legal &delta;</span></td>
+            </tr>
+            <tr>
+              <td><span class="badge bg-info text-dark">S1</span> Order Confirmed</td>
+              <td>START_PROCESSING</td>
+              <td><span class="badge bg-warning text-dark">S2</span></td>
+              <td class="text-start font-sans-serif">Warehouse picks and packs items</td>
+              <td><span class="badge bg-success">Legal &delta;</span></td>
+            </tr>
+            <tr>
+              <td><span class="badge bg-info text-dark">S1</span> Order Confirmed</td>
+              <td>CANCEL_ORDER</td>
+              <td><span class="badge bg-danger">S6</span></td>
+              <td class="text-start font-sans-serif">Order cancelled prior to packing</td>
+              <td><span class="badge bg-success">Legal &delta;</span></td>
+            </tr>
+            <tr>
+              <td><span class="badge bg-warning text-dark">S2</span> Processing</td>
+              <td>SHIP_ORDER</td>
+              <td><span class="badge bg-secondary">S3</span></td>
+              <td class="text-start font-sans-serif">Parcel dispatched to logistics carrier</td>
+              <td><span class="badge bg-success">Legal &delta;</span></td>
+            </tr>
+            <tr>
+              <td><span class="badge bg-secondary">S3</span> Shipped</td>
+              <td>OUT_FOR_DELIVERY</td>
+              <td><span class="badge bg-indigo text-white">S4</span></td>
+              <td class="text-start font-sans-serif">Courier agent departed local distribution hub</td>
+              <td><span class="badge bg-success">Legal &delta;</span></td>
+            </tr>
+            <tr>
+              <td><span class="badge bg-indigo text-white">S4</span> Out for Delivery</td>
+              <td>DELIVER_ORDER</td>
+              <td><span class="badge bg-success">S5</span></td>
+              <td class="text-start font-sans-serif">Package delivered and acknowledged</td>
+              <td><span class="badge bg-success">Legal &delta; (Terminal)</span></td>
+            </tr>
+            <tr class="table-light text-muted">
+              <td><span class="badge bg-success">S5</span> Delivered</td>
+              <td><em>Any &sigma;</em></td>
+              <td>&Oslash; (Undefined)</td>
+              <td class="text-start font-sans-serif">Delivered orders cannot be modified</td>
+              <td><span class="badge bg-danger">Strictly Rejected</span></td>
+            </tr>
+            <tr class="table-light text-muted">
+              <td><span class="badge bg-danger">S6</span> Cancelled</td>
+              <td><em>Any &sigma;</em></td>
+              <td>&Oslash; (Undefined)</td>
+              <td class="text-start font-sans-serif">Cancelled orders cannot be modified</td>
+              <td><span class="badge bg-danger">Strictly Rejected</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- LIVE DFA INTERACTIVE SIMULATOR -->
+    <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4 class="fw-bold text-dark mb-0 d-flex align-items-center gap-2">
+          <i class="bi bi-play-circle-fill text-primary"></i> Live Interactive Automaton Simulator
+        </h4>
+        <span class="badge bg-primary">Real-Time Evaluation</span>
+      </div>
+      <p class="text-muted small mb-4">
+        Test custom event sequences or single transitions against the DFA module.
+      </p>
+
+      <div class="row g-4">
+        <!-- Single Step Tester -->
+        <div class="col-lg-6">
+          <div class="card p-3 border rounded-3 bg-light h-100">
+            <h6 class="fw-bold text-primary mb-3">1. Test Single Transition &delta;(From, To)</h6>
+            
+            <div class="row g-2 mb-3">
+              <div class="col-6">
+                <label class="form-label small fw-semibold">Current State (q)</label>
+                <select id="simCurrentState" class="form-select form-select-sm">
+                  <option value="S0" selected>[S0] Order Placed</option>
+                  <option value="S1">[S1] Order Confirmed</option>
+                  <option value="S2">[S2] Processing</option>
+                  <option value="S3">[S3] Shipped</option>
+                  <option value="S4">[S4] Out for Delivery</option>
+                  <option value="S5">[S5] Delivered (Terminal)</option>
+                  <option value="S6">[S6] Cancelled (Terminal)</option>
+                </select>
+              </div>
+              <div class="col-6">
+                <label class="form-label small fw-semibold">Target / Action (&sigma;)</label>
+                <select id="simTargetInput" class="form-select form-select-sm">
+                  <option value="CONFIRM_ORDER">CONFIRM_ORDER (&rarr; S1)</option>
+                  <option value="CANCEL_ORDER">CANCEL_ORDER (&rarr; S6)</option>
+                  <option value="START_PROCESSING">START_PROCESSING (&rarr; S2)</option>
+                  <option value="SHIP_ORDER">SHIP_ORDER (&rarr; S3)</option>
+                  <option value="OUT_FOR_DELIVERY">OUT_FOR_DELIVERY (&rarr; S4)</option>
+                  <option value="DELIVER_ORDER">DELIVER_ORDER (&rarr; S5)</option>
+                  <option value="S5">Direct Jump to S5</option>
+                  <option value="S0">Backward to S0</option>
+                </select>
+              </div>
+            </div>
+
+            <button class="btn btn-primary btn-sm w-100 mb-3" onclick="runSingleSimulation()">
+              Evaluate Single Step
+            </button>
+
+            <div id="simSingleResult" class="p-3 rounded-3 small bg-white border" style="display: none;">
+              <!-- Injected dynamically -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Multi-Step Sequence Simulator -->
+        <div class="col-lg-6">
+          <div class="card p-3 border rounded-3 bg-light h-100">
+            <h6 class="fw-bold text-primary mb-2">2. Test Event Sequence &omega; &isin; &Sigma;*</h6>
+            <p class="small text-muted mb-2">Run an entire string of actions starting at initial state S0:</p>
+
+            <div class="mb-3">
+              <div class="d-flex flex-wrap gap-1 mb-2">
+                <button class="btn btn-outline-secondary btn-sm" onclick="setPreset('valid_standard')">Preset: Full Delivery Path</button>
+                <button class="btn btn-outline-secondary btn-sm" onclick="setPreset('valid_cancel')">Preset: Placed &rarr; Cancelled</button>
+                <button class="btn btn-outline-danger btn-sm" onclick="setPreset('invalid_skip')">Preset: Illegal Skip</button>
+              </div>
+              <textarea id="simSequenceInput" class="form-control form-control-sm font-monospace" rows="3" placeholder="CONFIRM_ORDER, START_PROCESSING, SHIP_ORDER, OUT_FOR_DELIVERY, DELIVER_ORDER"></textarea>
+            </div>
+
+            <button class="btn btn-primary btn-sm w-100 mb-3" onclick="runSequenceSimulation()">
+              Run Automaton on String
+            </button>
+
+            <div id="simSequenceResult" class="p-3 rounded-3 small bg-white border" style="display: none; max-height: 180px; overflow-y: auto;">
+              <!-- Injected dynamically -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/dfaOrderValidator.js"></script>
+  <script src="/js/app.js"></script>
+  <script>
+    function runSingleSimulation() {
+      const from = document.getElementById('simCurrentState').value;
+      const target = document.getElementById('simTargetInput').value;
+      const resBox = document.getElementById('simSingleResult');
+
+      const result = window.DFAOrderValidator.validateTransition(from, target);
+      resBox.style.display = 'block';
+
+      if (result.isValid) {
+        resBox.className = 'p-3 rounded-3 small bg-success-subtle text-success border border-success';
+        resBox.innerHTML = `
+          <strong><i class="bi bi-check-circle-fill me-1"></i> VALID TRANSITION ACCEPTED</strong><br>
+          &delta;(${result.fromState}, ${result.action}) &rarr; <strong>${result.toState} (${result.toLabel})</strong><br>
+          <span class="text-dark small">Action: ${result.actionLabel}</span>
+        `;
+      } else {
+        resBox.className = 'p-3 rounded-3 small bg-danger-subtle text-danger border border-danger';
+        resBox.innerHTML = `
+          <strong><i class="bi bi-x-circle-fill me-1"></i> INVALID TRANSITION REJECTED</strong><br>
+          ${escapeHtml(result.errorMessage)}
+        `;
+      }
+    }
+
+    function setPreset(type) {
+      const input = document.getElementById('simSequenceInput');
+      if (type === 'valid_standard') {
+        input.value = 'CONFIRM_ORDER, START_PROCESSING, SHIP_ORDER, OUT_FOR_DELIVERY, DELIVER_ORDER';
+      } else if (type === 'valid_cancel') {
+        input.value = 'CONFIRM_ORDER, CANCEL_ORDER';
+      } else if (type === 'invalid_skip') {
+        input.value = 'CONFIRM_ORDER, DELIVER_ORDER';
+      }
+    }
+
+    async function runSequenceSimulation() {
+      const raw = document.getElementById('simSequenceInput').value.trim();
+      const resBox = document.getElementById('simSequenceResult');
+
+      if (!raw) {
+        showToast('Please enter at least one action.', 'warning');
+        return;
+      }
+
+      const events = raw.split(',').map(s => s.trim()).filter(Boolean);
+
+      try {
+        const res = await fetch('/api/dfa/simulate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ events })
+        });
+        const data = await res.json();
+
+        resBox.style.display = 'block';
+
+        if (data.accepted) {
+          resBox.className = 'p-3 rounded-3 small bg-success-subtle text-success border border-success';
+          resBox.innerHTML = `
+            <strong><i class="bi bi-check-circle-fill me-1"></i> STRING ACCEPTED BY AUTOMATON:</strong><br>
+            Final State Reached: <strong>${data.finalState}</strong> (${data.isTerminal ? 'Terminal State' : 'Intermediate State'})<br>
+            <ol class="mt-2 mb-0 ps-3 font-monospace text-dark">
+              ${data.trace.map(t => `<li>[Step ${t.step}] &delta;(${t.fromState || 'START'}, ${t.action}) &rarr; ${t.toState || t.state}</li>`).join('')}
+            </ol>
+          `;
+        } else {
+          resBox.className = 'p-3 rounded-3 small bg-danger-subtle text-danger border border-danger';
+          resBox.innerHTML = `
+            <strong><i class="bi bi-x-octagon-fill me-1"></i> STRING REJECTED AT STEP ${data.haltedAtStep}:</strong><br>
+            ${escapeHtml(data.message)}<br>
+            <div class="mt-2 text-dark font-monospace">Halted at state: ${data.finalState}</div>
+          `;
+        }
+      } catch (err) {
+        console.error('Simulation error:', err);
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - DFA Commerce</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="/css/style.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+  <!-- Navigation Bar -->
+  <nav class="navbar navbar-expand-lg navbar-custom">
+    <div class="container">
+      <a class="navbar-brand" href="/">
+        <div class="brand-icon bg-danger"><i class="bi bi-shield-lock-fill"></i></div>
+        <span>DFA<span class="text-primary">Admin</span></span>
+      </a>
+      
+      <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-3">
+          <li class="nav-item"><a class="nav-link active" href="/admin">Overview</a></li>
+          <li class="nav-item"><a class="nav-link" href="/admin/orders">Order Management (DFA)</a></li>
+          <li class="nav-item"><a class="nav-link" href="/admin/products">Product Catalog</a></li>
+          <li class="nav-item"><a class="nav-link" href="/dfa-spec">DFA Specification</a></li>
+        </ul>
+
+        <ul class="navbar-nav align-items-center gap-2">
+          <li class="nav-item">
+            <a href="/" class="btn btn-outline-primary btn-sm me-2">
+              <i class="bi bi-shop me-1"></i> View Storefront
+            </a>
+          </li>
+          <div id="navAuthContainer" class="d-flex align-items-center gap-2"></div>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Page Header -->
+  <div class="bg-white border-bottom py-3 mb-4">
+    <div class="container">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <h3 class="fw-bold mb-1">Administrative Overview</h3>
+          <p class="text-muted small mb-0">System metrics and Deterministic Finite Automaton distribution.</p>
+        </div>
+        <div>
+          <a href="/admin/orders" class="btn btn-primary btn-sm px-3 shadow-sm">
+            <i class="bi bi-diagram-3 me-1"></i> Manage DFA Orders
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container mb-5">
+    
+    <!-- Top Metrics Row -->
+    <div class="row g-3 mb-4">
+      <div class="col-sm-6 col-lg-3">
+        <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
+          <div class="d-flex align-items-center justify-content-between">
+            <div>
+              <span class="small text-muted fw-bold">TOTAL REVENUE</span>
+              <h3 class="fw-bold text-dark mt-1 mb-0" id="metricRevenue">$0.00</h3>
+            </div>
+            <div class="rounded-circle bg-success-subtle text-success p-3">
+              <i class="bi bi-currency-dollar fs-4"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-sm-6 col-lg-3">
+        <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
+          <div class="d-flex align-items-center justify-content-between">
+            <div>
+              <span class="small text-muted fw-bold">TOTAL ORDERS</span>
+              <h3 class="fw-bold text-dark mt-1 mb-0" id="metricTotalOrders">0</h3>
+            </div>
+            <div class="rounded-circle bg-primary-subtle text-primary p-3">
+              <i class="bi bi-receipt fs-4"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-sm-6 col-lg-3">
+        <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
+          <div class="d-flex align-items-center justify-content-between">
+            <div>
+              <span class="small text-muted fw-bold">ACTIVE (S0-S4)</span>
+              <h3 class="fw-bold text-primary mt-1 mb-0" id="metricActiveOrders">0</h3>
+            </div>
+            <div class="rounded-circle bg-warning-subtle text-warning p-3">
+              <i class="bi bi-hourglass-split fs-4"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-sm-6 col-lg-3">
+        <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
+          <div class="d-flex align-items-center justify-content-between">
+            <div>
+              <span class="small text-muted fw-bold">TERMINAL (S5/S6)</span>
+              <h3 class="fw-bold text-secondary mt-1 mb-0" id="metricTerminalOrders">0</h3>
+            </div>
+            <div class="rounded-circle bg-secondary-subtle text-secondary p-3">
+              <i class="bi bi-shield-check fs-4"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DFA State Distribution Cards (S0 to S6) -->
+    <div class="card border-0 shadow-sm rounded-4 p-4 bg-white mb-4">
+      <h5 class="fw-bold text-dark mb-3">
+        <i class="bi bi-pie-chart text-primary me-2"></i>Orders Distributed by DFA State (Q)
+      </h5>
+      <div class="row g-3" id="dfaStateCountCards">
+        <!-- Injected dynamically -->
+      </div>
+    </div>
+
+    <!-- Recent Orders Table Preview -->
+    <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="fw-bold text-dark mb-0">Recent Orders</h5>
+        <a href="/admin/orders" class="btn btn-outline-primary btn-sm">View All Orders &rarr;</a>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light text-secondary small">
+            <tr>
+              <th>Order Number</th>
+              <th>Customer</th>
+              <th>Current DFA State</th>
+              <th>Total</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="recentOrdersTableBody">
+            <tr><td colspan="5" class="text-center py-3 text-muted">Loading orders...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/dfaOrderValidator.js"></script>
+  <script src="/js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Check admin auth
+      const authRes = await fetch('/api/auth/me');
+      const authData = await authRes.json();
+
+      if (!authData.success || !authData.user || authData.user.role !== 'admin') {
+        showToast('Administrator privileges required.', 'error');
+        setTimeout(() => { window.location.href = '/login?returnTo=/admin'; }, 600);
+        return;
+      }
+
+      await loadDashboardData();
+    });
+
+    async function loadDashboardData() {
+      try {
+        const res = await fetch('/api/admin/metrics');
+        const data = await res.json();
+
+        if (data.success && data.metrics) {
+          const m = data.metrics;
+          document.getElementById('metricRevenue').textContent = `$${m.totalRevenue.toFixed(2)}`;
+          document.getElementById('metricTotalOrders').textContent = m.totalOrders;
+          document.getElementById('metricActiveOrders').textContent = m.activeOrders;
+          document.getElementById('metricTerminalOrders').textContent = `${m.deliveredOrders} Deliv. / ${m.cancelledOrders} Canc.`;
+
+          // Render State Count Cards
+          const states = m.dfaStates || [];
+          const counts = m.stateCounts || {};
+          const cardsContainer = document.getElementById('dfaStateCountCards');
+
+          cardsContainer.innerHTML = states.map(s => {
+            const count = counts[s.id] || 0;
+            return `
+              <div class="col-6 col-md-4 col-lg">
+                <a href="/admin/orders?state=${s.id}" class="text-decoration-none">
+                  <div class="card p-3 text-center border h-100 rounded-3 hover-shadow transition">
+                    <span class="badge ${s.badgeClass} mb-2 mx-auto px-2 py-1">${s.id}</span>
+                    <h4 class="fw-bold text-dark mb-0">${count}</h4>
+                    <span class="small text-muted text-truncate d-block" title="${s.label}">${s.label}</span>
+                  </div>
+                </a>
+              </div>
+            `;
+          }).join('');
+        }
+
+        // Load recent orders
+        const ordersRes = await fetch('/api/admin/orders');
+        const ordersData = await ordersRes.json();
+        const tbody = document.getElementById('recentOrdersTableBody');
+
+        if (ordersData.success && Array.isArray(ordersData.orders)) {
+          const recent = ordersData.orders.slice(0, 5);
+          if (recent.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-3">No orders placed yet.</td></tr>';
+            return;
+          }
+
+          tbody.innerHTML = recent.map(o => `
+            <tr>
+              <td><span class="fw-bold font-monospace text-primary">${escapeHtml(o.orderNumber)}</span></td>
+              <td>${escapeHtml(o.customer?.name || 'Customer')}</td>
+              <td><span class="badge bg-primary">[${o.currentState}] ${escapeHtml(o.currentStateLabel)}</span></td>
+              <td class="fw-bold">$${o.totalAmount.toFixed(2)}</td>
+              <td>
+                <a href="/admin/orders" class="btn btn-outline-primary btn-sm py-0 px-2">Manage</a>
+              </td>
+            </tr>
+          `).join('');
+        }
+      } catch (err) {
+        console.error('Error loading dashboard data:', err);
+      }
+    }
+  </script>
+</body>
+</html>

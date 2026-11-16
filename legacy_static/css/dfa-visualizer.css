@@ -1,0 +1,320 @@
+/**
+ * DFA Order Tracking Visualizer & State Machine Diagram CSS
+ */
+
+/* Main Stepper Container */
+.dfa-stepper-container {
+  padding: 2.5rem 1rem 1.5rem 1rem;
+  background: white;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  margin-bottom: 2rem;
+}
+
+/* Linear Stepper */
+.dfa-stepper {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  position: relative;
+  margin-bottom: 2rem;
+}
+
+/* Connecting Line */
+.dfa-stepper-track {
+  position: absolute;
+  top: 25px;
+  left: 5%;
+  right: 5%;
+  height: 4px;
+  background-color: #e2e8f0;
+  z-index: 1;
+}
+
+.dfa-stepper-track-progress {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background: linear-gradient(90deg, #0d6efd, #0dcaf0);
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 2;
+}
+
+/* Individual Stepper Step */
+.dfa-step {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 16%;
+}
+
+.dfa-step-circle {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 3px solid #cbd5e1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1rem;
+  color: #64748b;
+  margin-bottom: 0.75rem;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.dfa-step-state-tag {
+  font-size: 0.75rem;
+  font-family: monospace;
+}
+
+/* Completed Step */
+.dfa-step.completed .dfa-step-circle {
+  background: #0d6efd;
+  border-color: #0d6efd;
+  color: white;
+  box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.15);
+}
+
+/* Current / Active Step */
+.dfa-step.active .dfa-step-circle {
+  background: #0d6efd;
+  border-color: #0d6efd;
+  color: white;
+  transform: scale(1.15);
+  box-shadow: 0 0 0 6px rgba(13, 110, 253, 0.25);
+  animation: pulse-ring 2s infinite;
+}
+
+@keyframes pulse-ring {
+  0% {
+    box-shadow: 0 0 0 0 rgba(13, 110, 253, 0.5);
+  }
+  70% {
+    box-shadow: 0 0 0 12px rgba(13, 110, 253, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(13, 110, 253, 0);
+  }
+}
+
+.dfa-step-title {
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: #334155;
+  margin-bottom: 0.25rem;
+}
+
+.dfa-step.active .dfa-step-title {
+  color: #0d6efd;
+  font-weight: 700;
+}
+
+.dfa-step-desc {
+  font-size: 0.72rem;
+  color: #94a3b8;
+  max-width: 110px;
+  line-height: 1.2;
+}
+
+/* Cancelled State Banner */
+.dfa-cancelled-banner {
+  background: linear-gradient(135deg, #fef2f2, #fee2e2);
+  border: 2px solid #ef4444;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.dfa-cancelled-icon {
+  width: 55px;
+  height: 55px;
+  background-color: #ef4444;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  flex-shrink: 0;
+  box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3);
+}
+
+/* Current State Highlight Card */
+.current-state-card {
+  border-left: 5px solid #0d6efd;
+  background: #f8fafc;
+  border-radius: 10px;
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+/* DFA Formal State Machine Visualizer / Graph */
+.dfa-graph-container {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.dfa-graph-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem 0;
+}
+
+.dfa-node {
+  background: white;
+  border: 2px solid #cbd5e1;
+  border-radius: 12px;
+  padding: 0.75rem 1rem;
+  min-width: 140px;
+  text-align: center;
+  position: relative;
+  transition: all 0.25s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.dfa-node.node-s0 { border-color: #0d6efd; }
+.dfa-node.node-s1 { border-color: #0dcaf0; }
+.dfa-node.node-s2 { border-color: #ffc107; }
+.dfa-node.node-s3 { border-color: #6c757d; }
+.dfa-node.node-s4 { border-color: #6610f2; }
+.dfa-node.node-s5 { border-color: #198754; border-width: 3px; }
+.dfa-node.node-s6 { border-color: #dc3545; border-width: 3px; }
+
+/* Double border for accepting / terminal states */
+.dfa-node.terminal-node {
+  box-shadow: inset 0 0 0 2px #fff, inset 0 0 0 4px #94a3b8;
+}
+
+.dfa-node.current-node {
+  background: #e7f1ff;
+  border-color: #0d6efd;
+  border-width: 3px;
+  transform: translateY(-4px);
+  box-shadow: 0 8px 16px rgba(13, 110, 253, 0.25);
+}
+
+.dfa-node-state {
+  font-family: monospace;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #1e293b;
+}
+
+.dfa-node-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #64748b;
+}
+
+/* History Timeline */
+.timeline {
+  position: relative;
+  padding-left: 2rem;
+  list-style: none;
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  top: 5px;
+  bottom: 5px;
+  left: 9px;
+  width: 2px;
+  background-color: #cbd5e1;
+}
+
+.timeline-item {
+  position: relative;
+  margin-bottom: 1.5rem;
+}
+
+.timeline-marker {
+  position: absolute;
+  left: -2rem;
+  top: 3px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: #0d6efd;
+  border: 3px solid white;
+  box-shadow: 0 0 0 2px #0d6efd;
+}
+
+.timeline-marker.terminal {
+  background-color: #198754;
+  box-shadow: 0 0 0 2px #198754;
+}
+
+.timeline-marker.cancelled {
+  background-color: #dc3545;
+  box-shadow: 0 0 0 2px #dc3545;
+}
+
+.timeline-content {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 0.85rem 1.15rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.timeline-title {
+  font-weight: 700;
+  font-size: 0.95rem;
+  margin-bottom: 0.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.timeline-time {
+  font-size: 0.78rem;
+  color: #94a3b8;
+}
+
+@media (max-width: 768px) {
+  .dfa-stepper {
+    flex-direction: column;
+    align-items: flex-start;
+    padding-left: 1.5rem;
+  }
+  .dfa-stepper-track {
+    top: 0;
+    bottom: 0;
+    left: 25px;
+    width: 4px;
+    height: 100%;
+  }
+  .dfa-step {
+    width: 100%;
+    flex-direction: row;
+    align-items: center;
+    text-align: left;
+    margin-bottom: 1.25rem;
+  }
+  .dfa-step-circle {
+    margin-bottom: 0;
+    margin-right: 1rem;
+    flex-shrink: 0;
+  }
+  .dfa-step-desc {
+    max-width: none;
+  }
+}

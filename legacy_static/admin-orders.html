@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DFA Order Management - DFA Admin</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="/css/style.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+  <!-- Navigation Bar -->
+  <nav class="navbar navbar-expand-lg navbar-custom">
+    <div class="container">
+      <a class="navbar-brand" href="/">
+        <div class="brand-icon bg-danger"><i class="bi bi-shield-lock-fill"></i></div>
+        <span>DFA<span class="text-primary">Admin</span></span>
+      </a>
+      
+      <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-3">
+          <li class="nav-item"><a class="nav-link" href="/admin">Overview</a></li>
+          <li class="nav-item"><a class="nav-link active" href="/admin/orders">Order Management (DFA)</a></li>
+          <li class="nav-item"><a class="nav-link" href="/admin/products">Product Catalog</a></li>
+          <li class="nav-item"><a class="nav-link" href="/dfa-spec">DFA Specification</a></li>
+        </ul>
+
+        <ul class="navbar-nav align-items-center gap-2">
+          <li class="nav-item">
+            <a href="/" class="btn btn-outline-primary btn-sm me-2">Storefront</a>
+          </li>
+          <div id="navAuthContainer" class="d-flex align-items-center gap-2"></div>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Title & Filter Header -->
+  <div class="bg-white border-bottom py-3 mb-4">
+    <div class="container">
+      <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+        <div>
+          <span class="badge bg-danger-subtle text-danger fw-bold mb-1">DFA AUTOMATON VALIDATOR</span>
+          <h3 class="fw-bold mb-0">Order Management & Transition Control</h3>
+        </div>
+        <div style="min-width: 280px;">
+          <div class="input-group">
+            <span class="input-group-text bg-light border-end-0"><i class="bi bi-search text-muted"></i></span>
+            <input type="text" id="adminOrderSearch" class="form-control border-start-0" placeholder="Filter by order # or customer...">
+          </div>
+        </div>
+      </div>
+
+      <!-- DFA State Filter Tabs -->
+      <div class="d-flex flex-wrap gap-2 mt-3 pt-2 border-top">
+        <button class="btn btn-sm btn-outline-secondary filter-state-btn active" data-state="ALL" onclick="setFilterState('ALL')">All Orders</button>
+        <button class="btn btn-sm btn-outline-primary filter-state-btn" data-state="S0" onclick="setFilterState('S0')">[S0] Placed</button>
+        <button class="btn btn-sm btn-outline-info filter-state-btn" data-state="S1" onclick="setFilterState('S1')">[S1] Confirmed</button>
+        <button class="btn btn-sm btn-outline-warning filter-state-btn" data-state="S2" onclick="setFilterState('S2')">[S2] Processing</button>
+        <button class="btn btn-sm btn-outline-secondary filter-state-btn" data-state="S3" onclick="setFilterState('S3')">[S3] Shipped</button>
+        <button class="btn btn-sm btn-outline-primary filter-state-btn" data-state="S4" onclick="setFilterState('S4')">[S4] Out for Delivery</button>
+        <button class="btn btn-sm btn-outline-success filter-state-btn" data-state="S5" onclick="setFilterState('S5')">[S5] Delivered (Terminal)</button>
+        <button class="btn btn-sm btn-outline-danger filter-state-btn" data-state="S6" onclick="setFilterState('S6')">[S6] Cancelled (Terminal)</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="container mb-5">
+    
+    <!-- Orders Table Card -->
+    <div class="card border-0 shadow-sm rounded-4 bg-white overflow-hidden">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light text-secondary small">
+            <tr>
+              <th>Order Number</th>
+              <th>Customer</th>
+              <th>Date Placed</th>
+              <th>Current DFA State</th>
+              <th>Total</th>
+              <th>Items</th>
+              <th class="text-end">Action</th>
+            </tr>
+          </thead>
+          <tbody id="adminOrdersTableBody">
+            <!-- Injected by admin-orders.js -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- DFA TRANSITION CONTROL MODAL -->
+  <div class="modal fade" id="dfaTransitionModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content border-0 shadow-lg rounded-4">
+        
+        <div class="modal-header border-bottom">
+          <div>
+            <h5 class="modal-title fw-bold text-dark d-flex align-items-center gap-2">
+              <i class="bi bi-diagram-3-fill text-primary"></i>
+              <span>DFA Transition Console</span>
+            </h5>
+            <small class="text-muted">Order: <strong class="font-monospace text-primary" id="modalOrderNumber">ORD-0000</strong></small>
+          </div>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+
+        <div class="modal-body p-4">
+          
+          <!-- Current State Banner -->
+          <div class="d-flex align-items-center justify-content-between p-3 bg-light rounded-3 border mb-4">
+            <div>
+              <span class="small text-muted d-block fw-semibold">CURRENT AUTOMATON STATE (Q)</span>
+              <span id="modalCurrentState" class="badge bg-primary fs-6 px-3 py-2 mt-1">[S0] Order Placed</span>
+            </div>
+            <div class="text-end small text-muted">
+              <span>Transition Function:</span><br>
+              <code class="fw-bold">&delta;(q_curr, event) &rarr; q_next</code>
+            </div>
+          </div>
+
+          <!-- Alert for Success / Violation Results -->
+          <div id="dfaTransitionAlert" style="display: none;"></div>
+
+          <!-- Terminal State Notice (S5/S6) -->
+          <div id="terminalStateNotice" style="display: none;" class="mb-4"></div>
+
+          <!-- Valid Transitions Section -->
+          <div id="validTransitionsContainer" class="mb-4">
+            <!-- Buttons injected by admin-orders.js -->
+          </div>
+
+          <!-- Transition Note Input -->
+          <div class="mb-4">
+            <label class="form-label small fw-bold text-secondary">Transition Audit Note (Optional)</label>
+            <input type="text" id="transitionNoteInput" class="form-control form-control-sm" placeholder="e.g. Courier dispatch tracking #FX-9901">
+          </div>
+
+          <!-- DELIBERATE INVALID TRANSITION TESTER (For Evaluators / Teachers) -->
+          <div class="card border border-danger-subtle bg-danger-subtle bg-opacity-10 p-3 rounded-3 mb-4" id="invalidTestSection">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+              <span class="fw-bold text-danger small d-flex align-items-center gap-1">
+                <i class="bi bi-radioactive"></i> Deliberate Invalid Transition Tester (Demonstrate Rejection)
+              </span>
+              <span class="badge bg-danger">Evaluator Tool</span>
+            </div>
+            <p class="small text-muted mb-2">
+              Select any target state to test that the DFA rejects illegal transitions (e.g. jumping from S0 to S5 directly, or attempting to modify a terminal state S5/S6).
+            </p>
+            <div class="d-flex gap-2">
+              <select id="testInvalidStateSelect" class="form-select form-select-sm" style="max-width: 250px;">
+                <option value="S0">[S0] Order Placed</option>
+                <option value="S1">[S1] Order Confirmed</option>
+                <option value="S2">[S2] Processing</option>
+                <option value="S3">[S3] Shipped</option>
+                <option value="S4">[S4] Out for Delivery</option>
+                <option value="S5" selected>[S5] Delivered (Illegal skip)</option>
+                <option value="S6">[S6] Cancelled</option>
+              </select>
+              <button class="btn btn-outline-danger btn-sm text-nowrap fw-semibold" onclick="testDfaRejection()">
+                <i class="bi bi-shield-x me-1"></i> Trigger & Verify DFA Rejection
+              </button>
+            </div>
+          </div>
+
+          <!-- Embedded Audit History Log -->
+          <h6 class="fw-bold text-dark border-top pt-3 mb-2">Recorded Transition Audit Trail:</h6>
+          <div id="modalAuditHistoryContainer" style="max-height: 200px; overflow-y: auto;">
+            <!-- Table injected by admin-orders.js -->
+          </div>
+
+        </div>
+
+        <div class="modal-footer border-top py-2">
+          <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/dfaOrderValidator.js"></script>
+  <script src="/js/app.js"></script>
+  <script src="/js/admin-orders.js"></script>
+  <script>
+    // URL state query param filter support (e.g. /admin/orders?state=S2)
+    document.addEventListener('DOMContentLoaded', () => {
+      const params = new URLSearchParams(window.location.search);
+      const stateParam = params.get('state');
+      if (stateParam) {
+        setFilterState(stateParam);
+      }
+    });
+  </script>
+</body>
+</html>

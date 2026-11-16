@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Orders - DFA Commerce</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="/css/style.css" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar navbar-expand-lg navbar-custom">
+    <div class="container">
+      <a class="navbar-brand" href="/">
+        <div class="brand-icon"><i class="bi bi-diagram-3-fill"></i></div>
+        <span>DFA<span class="text-primary">Commerce</span></span>
+      </a>
+      
+      <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-3">
+          <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="/products">Products</a></li>
+          <li class="nav-item"><a class="nav-link" href="/track">Track Order</a></li>
+          <li class="nav-item"><a class="nav-link" href="/dfa-spec">DFA Theory & Spec</a></li>
+        </ul>
+
+        <ul class="navbar-nav align-items-center gap-2">
+          <li class="nav-item position-relative me-2">
+            <a class="nav-link p-2" href="/cart" title="Shopping Cart">
+              <i class="bi bi-cart3 fs-5 text-dark"></i>
+              <span id="navCartBadge" class="badge-cart-count" style="display: none;">0</span>
+            </a>
+          </li>
+          <div id="navAuthContainer" class="d-flex align-items-center gap-2"></div>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Title -->
+  <div class="bg-white border-bottom py-3 mb-4">
+    <div class="container">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb mb-1 small">
+          <li class="breadcrumb-item"><a href="/" class="text-decoration-none">Home</a></li>
+          <li class="breadcrumb-item active" aria-current="page">My Orders</li>
+        </ol>
+      </nav>
+      <h3 class="fw-bold mb-0">Order History & DFA Tracking</h3>
+    </div>
+  </div>
+
+  <div class="container mb-5">
+    
+    <!-- Orders List Container -->
+    <div id="ordersLoading" class="text-center py-5">
+      <div class="spinner-border text-primary" role="status"></div>
+      <p class="text-muted mt-2">Loading your order history...</p>
+    </div>
+
+    <div id="ordersEmpty" class="card p-5 text-center border-0 shadow-sm rounded-4" style="display: none;">
+      <i class="bi bi-bag-x fs-1 text-muted mb-3"></i>
+      <h4 class="fw-bold">No orders placed yet</h4>
+      <p class="text-muted">You haven't placed any orders with DFA Commerce yet.</p>
+      <div>
+        <a href="/products" class="btn btn-primary px-4 py-2 mt-2">
+          Start Shopping
+        </a>
+      </div>
+    </div>
+
+    <div id="ordersListContainer" style="display: none;">
+      <!-- Populated dynamically -->
+    </div>
+
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/dfaOrderValidator.js"></script>
+  <script src="/js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Check auth
+      const authRes = await fetch('/api/auth/me');
+      const authData = await authRes.json();
+
+      if (!authData.success || !authData.user) {
+        window.location.href = '/login?returnTo=/orders';
+        return;
+      }
+
+      await loadMyOrders();
+    });
+
+    async function loadMyOrders() {
+      const loading = document.getElementById('ordersLoading');
+      const empty = document.getElementById('ordersEmpty');
+      const list = document.getElementById('ordersListContainer');
+
+      try {
+        const res = await fetch('/api/orders/my-orders');
+        const data = await res.json();
+
+        loading.style.display = 'none';
+
+        if (data.success && Array.isArray(data.orders)) {
+          if (data.orders.length === 0) {
+            empty.style.display = 'block';
+            return;
+          }
+
+          list.style.display = 'block';
+          list.innerHTML = data.orders.map(order => {
+            const dateStr = new Date(order.createdAt).toLocaleDateString('en-US', {
+              month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit'
+            });
+
+            const badgeClasses = {
+              S0: 'bg-primary text-white',
+              S1: 'bg-info text-dark',
+              S2: 'bg-warning text-dark',
+              S3: 'bg-secondary text-white',
+              S4: 'bg-indigo text-white',
+              S5: 'bg-success text-white',
+              S6: 'bg-danger text-white'
+            };
+
+            const badgeClass = badgeClasses[order.currentState] || 'bg-primary text-white';
+
+            return `
+              <div class="order-card p-0 mb-4">
+                <div class="order-card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
+                  <div class="d-flex align-items-center gap-3">
+                    <div>
+                      <span class="small text-muted d-block">ORDER NUMBER</span>
+                      <strong class="text-primary fs-6 font-monospace">${escapeHtml(order.orderNumber)}</strong>
+                    </div>
+                    <div class="border-start ps-3 d-none d-sm-block">
+                      <span class="small text-muted d-block">DATE PLACED</span>
+                      <span class="small fw-semibold text-dark">${dateStr}</span>
+                    </div>
+                    <div class="border-start ps-3">
+                      <span class="small text-muted d-block">TOTAL AMOUNT</span>
+                      <span class="small fw-bold text-dark">$${order.totalAmount.toFixed(2)}</span>
+                    </div>
+                  </div>
+                  <div>
+                    <span class="badge ${badgeClass} fs-7 px-3 py-2">
+                      <i class="bi bi-diagram-3 me-1"></i> [${order.currentState}] ${escapeHtml(order.currentStateLabel)}
+                    </span>
+                  </div>
+                </div>
+
+                <div class="p-3">
+                  <div class="row align-items-center g-3">
+                    <div class="col-md-8">
+                      <div class="d-flex flex-wrap gap-2 align-items-center">
+                        ${order.items.map(item => `
+                          <div class="d-flex align-items-center gap-2 p-1 border rounded bg-light" style="max-width: 240px;">
+                            <img src="${escapeHtml(item.imageUrl || '')}" alt="${escapeHtml(item.name)}" class="rounded" style="width: 40px; height: 40px; object-fit: cover;">
+                            <div class="text-truncate small">
+                              <div class="fw-bold text-truncate">${escapeHtml(item.name)}</div>
+                              <span class="text-muted">Qty: ${item.quantity}</span>
+                            </div>
+                          </div>
+                        `).join('')}
+                      </div>
+                    </div>
+                    <div class="col-md-4 text-md-end">
+                      <a href="/track/${order.orderNumber}" class="btn btn-primary btn-sm px-3 shadow-sm">
+                        <i class="bi bi-geo-alt-fill me-1"></i> Track Order (DFA Visualizer)
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            `;
+          }).join('');
+        }
+      } catch (err) {
+        console.error('Error loading orders:', err);
+        loading.innerHTML = '<p class="text-danger">Failed to load orders. Please refresh the page.</p>';
+      }
+    }
+  </script>
+</body>
+</html>
